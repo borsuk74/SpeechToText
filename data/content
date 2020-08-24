@@ -1,0 +1,134 @@
+translation from sssd1:
+shirt was there supposed to find themselves caught in a similar conundrum which is different with a real estate broker can block the sale of a home
+ a book of directors can and these days increase slam the doors and solicited before company even when shareholders paver the deal
+
+
+shirt was there supposed to find themselves caught in a similar conundrum which is different with a real estate broker can block the sale of a home
+ a book of directors can and these days increase slam the doors and solicited before company even when shareholders paver the deal
+
+ translation from sssd2:
+
+she mentions that somebody knocks on your door and offers to buy your house for more than you thought it was worse you want to take the money but you real
+ estate broker prevents you insisting that the price will go up the year passes and you're still waiting
+
+she mentions that somebody knocks on your door and offers to buy your house for more than you thought it was worse you want to take the money but you real
+ estate broker prevents you insisting that the price will go up the year passes and you're still waiting
+
+ALL WITH DIARIZATION.
+ translation from auxIVA_1, chunk 10000:
+ shareholders often find themselves caught in a similar conundrum which is different while a real estate broker can block the sale of a home
+ a box of directors can and these days increase slam the doors and actually stated before company even when shareholders favored the deal
+
+
+ translation from auxIVA_2 chunk 10000:
+imagine that somebody knocks on your door and offered to buy your house for more than you thought I was worth you want to take the money for to real
+estate broker prevent still insisting that the price will go up a year passes and you're still waiting
+
+translation from auxIVA_2 chunk 3000:
+imagine that somebody knocks on your door and offered to buy your house for more than you thought I was worth you want to take the money for to real
+ estate broker prevent still insisting that the price will go up a year passes and you're still waiting
+ translation from auxIVA_2 chunk 1000:
+ imagine that somebody knocks on your door and offered to buy your house for more than you thought I was worth you want to take the money for to real
+ estate broker prevent still insisting that the price will go up a year passes and you're still waiting
+
+
+WITHOUT_DIARIZATION:
+imagine that somebody knocks on your door and offered to buy your house for more than you thought I was worth you want to take the money for to real
+estate broker prevent still insisting that the price will go up a year passes and you're still waiting
+
+
+
+WAS CREATED 2-channel file from auxiva_1.wav and auxiva_2.wav.
+The execution main:
+
+def main_4():
+    '''Experiment to run 1 channels from mixed file. "
+     '''
+    import os
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/borsuk74/gcp/speechtotext-281122-7d0875e1d1ca.json"
+    print(os.environ['GOOGLE_APPLICATION_CREDENTIALS'])
+    # See http://g.co/cloud/speech/docs/languages
+    # for a list of supported languages.
+    language_code = 'en-US'  # a BCP-47 language tag
+
+    client = speech.SpeechClient()
+
+    d_config = types.SpeakerDiarizationConfig(
+        enable_speaker_diarization=True,
+        min_speaker_count=2,
+        max_speaker_count=2
+    )
+
+    config = types.RecognitionConfig(
+        audio_channel_count=2,
+        enable_separate_recognition_per_channel=True,
+        diarization_config=d_config,
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=RATE,
+        language_code=language_code)
+
+    streaming_config = types.StreamingRecognitionConfig(
+        config=config,
+        interim_results=True)
+
+    with MicrophoneStream(RATE, CHUNK) as stream:
+        #audio_generator = stream.generator()
+        audio_generator = stream.generator_from_file('./data/auxiva2chn.wav')
+
+
+        #test_requests = (content[0] for content in audio_generator)
+        #test_sample = next(test_requests)
+        #test_sample = cis.convert_toPyAudio(test_sample)
+        #test_sample = test_sample.tostring()
+        #print(type(test_sample))
+        #print(len(test_sample))
+
+        #print(test_sample.shape)
+        requests = (types.StreamingRecognizeRequest(audio_content=content)
+                    for content in audio_generator)
+
+
+        #while True:
+            #try:
+                #next(requests_0)
+            #except Exception as err:
+                #print("exception"+str(err))
+                #break
+
+        response = client.streaming_recognize(streaming_config, requests)
+
+        print(u"Waiting for operation to complete...")
+
+
+        #for result in response.results:
+            # First alternative has words tagged with speakers
+            #alternative = result.alternatives[0]
+            #print(u"Transcript: {}".format(alternative.transcript))
+            # Print the speaker_tag of each word
+            #for word in alternative.words:
+               # print(u"Word: {}".format(word.word))
+               # print(u"Speaker tag: {}".format(word.speaker_tag))
+
+        listen_print_loop(response)
+
+
+     RESULTS:
+
+     shareholders often find themselves caught in a similar conundrum which is different while a real estate broker can block the sale of a home
+     a box of directors can and these days increase slam the doors and actually stated before company even when shareholders favored the deal
+
+     imagine that somebody knocks on your door and offered to buy your house for more than you thought I was worth you want to take the money for to real
+      estate broker prevent still insisting that the price will go up a year passes and you're still waiting
+
+
+QUESTIONS:
+
+1.If some language model could be taken into account when doing speech recognition?
+2.How exactly streaming functionality is working? How can I print it more interactively?
+3.It took 8 sec to process a file in streaming mode.
+4. Time complexity and performance of auxIVC algorithm. rewrite it in java.
+
+
+
+
+

@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package movie;
+
+option java_package = "com.proto.movie";
+option java_multiple_files = true;
+
+message Movie {
+    string id = 1;
+    string title = 2;
+    repeated MovieGenre genres = 3;
+    repeated MoviePerson directors = 4;
+    repeated MoviePerson writers = 5;
+    repeated MoviePerson stars = 6;
+    int32 year_of_production = 7;
+    int32 duration_minutes = 8;
+}
+
+message MoviePerson {
+    string first_name = 1;
+    string last_name = 2;
+}
+
+enum MovieGenre {
+    ACTION = 0;
+    COMEDY = 1;
+    DRAMA = 2;
+    HORROR = 3;
+    SCI_FI = 4;
+    THRILLER = 5;
+    WAR = 6;
+    WESTERN = 7;
+}
+
+message AddMovieResponse {
+    string movie_id = 1;
+}
+
+message AddMultipleMoviesResponse {
+    repeated string movie_ids = 1;
+}
+
+message MovieNote{
+  string movie_id = 1;
+  int32 movie_rating = 2;
+}
+
+message FaceRecognitionRequest{
+  int64 timeStamp = 1;
+  repeated bytes videoContent = 2;
+
+}
+
+message FaceRecognitionResponse{
+  int64 num = 1;
+}
+
+service FaceService {
+  //unary API
+  rpc RecognizeFace(FaceRecognitionRequest) returns (FaceRecognitionResponse) {}
+}
+
+service MovieService {
+    // unary API
+    rpc AddMovie (Movie) returns (AddMovieResponse) {}
+
+    // client streaming API
+    rpc AddMultipleMovies (stream Movie) returns (AddMultipleMoviesResponse) {}
+
+    // bidirectional streaming API
+    rpc MovieChat(stream Movie) returns (stream MovieNote) {}
+
+}

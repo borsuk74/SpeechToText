@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package face;
+
+option java_package = "com.proto.face";
+option java_multiple_files = true;
+
+
+
+message FaceRecognitionRequest{
+  int64 timeStamp = 1;
+  repeated bytes videoContent = 2;
+
+}
+
+message FaceRecognitionResponse{
+  int64 num = 1;
+}
+
+service FaceService {
+  //unary API
+  rpc RecognizeFace(FaceRecognitionRequest) returns (FaceRecognitionResponse) {}
+}
+
+
